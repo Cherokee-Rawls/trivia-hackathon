@@ -30,12 +30,46 @@ class Meme {
         const memeId = myOutput.data.memes[Math.floor(Math.random() * numberOfMemes)].id;
         console.log(memeId);
         this.templateId = memeId;
-        this.postMeme();
+        this.postMeme().then(() => {
+          return 
+        });
       });
 
     }).on("error", (err) => {
       console.log("Error: " + err.message);
     });
+  });
+
+  const postMemePromise = new Promise((resolve, reject) => {
+    console.log(this.congratz);
+
+    // Build the post string from an object
+    var post_data = querystring.stringify({
+      'template_id': this.templateId,
+      'username': username,
+      'password': password,
+      'text0': this.congratz,
+      'text1': this.winner
+    });
+
+    const post_options = {
+      hostname: 'api.imgflip.com',
+      port: 443,
+      path: `/caption_image?text0=${this.congratz}&text1=${this.winner}!&password=${password}&username=${username}&template_id=${this.templateId}`,
+      method: 'POST'
+    };
+
+    // Set up the request
+    var post_req = https.request(post_options, function (res) {
+      res.setEncoding('utf8');
+      res.on('data', function (chunk) {
+        console.log('Response: ' + chunk);
+      });
+    });
+
+    // Write data to request body
+    post_req.write(post_data);
+    post_req.end();
   });
 
   getMeme(winner) {
