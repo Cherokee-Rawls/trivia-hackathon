@@ -5,14 +5,14 @@ class GameState {
         this.games = {};
     }
 
-    newGame(channelId, numberOfQuestions) {
-        return this.games[channelId] = new Game(numberOfQuestions);
+    newGame(messageId, numberOfQuestions) {
+        return this.games[messageId] = new Game(numberOfQuestions);
     }
 
-    getGame(channelId) {
-        const game = this.games[channelId];
+    getGame(messageId) {
+        const game = this.games[messageId];
         if (game == null) {
-            console.error(`Game for channel ${channelId} not found.`)
+            console.error(`Game for message ${messageId} not found.`)
         }
 
         return game;

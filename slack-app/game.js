@@ -14,7 +14,7 @@ class Game {
     }
 
     async startGame() {
-        this.questions = await triviaApi.getTriviaQuestions(this.numberOfQuestions);
+        this.questions = (await triviaApi.getTriviaQuestions(this.numberOfQuestions));
         this.answers = new Array(this.questions.length).fill([]);
         return this.getCurrentQuestion();
     }
@@ -30,25 +30,19 @@ class Game {
 
     getCurrentQuestion() {
         return {
+            number: this.currentQuestionIndex + 1,
             question: this.questions[this.currentQuestionIndex].question,
             choices: this.questions[this.currentQuestionIndex].choices
         }
     }
 
-    checkCurrentAnswer(choiceIndex) {
-        return this.questions[this.currentQuestionIndex].answer === this.getCurrentQuestion().choices[+choiceIndex];
-    }
-
     addParticipant(username, answer) {
-        if (!this.answers[this.currentQuestionIndex]) {
-            this.answers[this.currentQuestionIndex] = []
-        }
-
         this.answers[this.currentQuestionIndex] = this.answers[this.currentQuestionIndex]
             .filter(a => a.username !== username)
             .concat([{
                 username,
-                answer
+                answer,
+                isCorrect: this.questions[this.currentQuestionIndex].answer === answer
             }]);
     }
 
@@ -57,11 +51,21 @@ class Game {
     }
 
     getCurrentResult() {
-        return this._getResultsForQuestion(this.currentQuestionIndex);
+        return {
+            number: this.currentQuestionIndex + 1,
+            question: this.questions[this.currentQuestionIndex].question,
+            answer: this.questions[this.currentQuestionIndex].answer,
+            correctUsers: this.answers[this.currentQuestionIndex].filter(a => a.isCorrect).map(a => a.username)
+        }
     }
 
     getAllResults() {
-        return this.questions.map((_, index) => _getResultsForQuestion(index));
+        const participants = [...new Set(Object.values(this.answers).flatMap(a => a).map(a => a.username))];
+        const scores = participants.map(p => Object.values(this.answers).flatMap(a => a).filter(a => p === a.username).map(a => a.isCorrect).reduce((a, b) => a + b, 0));
+        return participants.map((p, i) => ({
+            participant: p,
+            score: scores[i]
+        })).sort((a, b) => +b.score - +a.score);
     }
 
     getCounterRef() {
@@ -78,14 +82,6 @@ class Game {
 
     setNumberOfTicks(ticks) {
         this.counter.numberOfTicks = ticks;
-    }
-
-    _getResultsForQuestion(index) {
-        return {
-            question: this.questions[index].question,
-            answer: this.questions[index].answer,
-            correctUsers: this.answers[index].filter(a => a.answer === this.questions[index].answer)
-        }
     }
 }
 

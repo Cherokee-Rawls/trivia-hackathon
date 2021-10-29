@@ -4,14 +4,16 @@
   "description": "A basic template to spin up a Bolt app for Slack",
   "main": "app.js",
   "scripts": {
-    "start": "node --experimental-modules  app.js"
+    "start": "node app.js"
   },
   "dependencies": {
     "@slack/bolt": "^2.x",
     "@slack/interactive-messages": "^2.0.2",
     "dotenv": "^10.0.0",
+    "html-entities": "^2.3.2",
     "node-fetch": "^3.0.0",
-    "node-fetch-commonjs": "^3.0.3"
+    "node-fetch-commonjs": "^3.0.3",
+    "querystring": "^0.2.1"
   },
   "engines": {
     "node": "11.x"

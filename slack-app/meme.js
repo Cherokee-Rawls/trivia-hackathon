@@ -1,85 +1,67 @@
 const https = require('https');
-
-const meme = new Meme();
-meme.getMeme();
-meme.postMeme();
-console.log(meme.generatedImgUrl);
+const querystring = require('querystring');
 
 class Meme {
-    constructor() {
-        this.templateId = '';
-        this.congratz = 'Congratz';
-        this.winner = 'Jake!';
-        this.generatedImgUrl = '';
-    }
+  constructor() {
+    this.templateId = '';
+    this.congratz = 'Congratz';
+    this.winner = 'Jake!';
+    this.generatedImgUrl = '';
+  }
 
-    getMeme() {
-      https.get('https://api.imgflip.com/get_memes', (resp) => {
-        let data = '';
+  getMeme(winner) {
+    this.winner = winner;
 
-        // A chunk of data has been received.
-        resp.on('data', (chunk) => {
-          data += chunk;
-        });
+    https.get('https://api.imgflip.com/get_memes', (resp) => {
+      let data = '';
 
-        let memes = JSON.parse(data).memes;
-        this.templateId = memes[0].id;
-
-        // The whole response has been received. Print out the result.
-        resp.on('end', () => {
-          console.log(memes[0]);
-        });
-
-      }).on("error", (err) => {
-        console.log("Error: " + err.message);
+      // A chunk of data has been received.
+      resp.on('data', (chunk) => {
+        data += chunk;
       });
-    }
 
-    postMeme() {
-      const postData = JSON.stringify({
-        'msg': 'Hello World!'
+      // The whole response has been received. Print out the result.
+      resp.on('end', () => {
+        let myOutput = JSON.parse(data);
+        console.log(myOutput.data.memes[0].id);
+        this.templateId = myOutput.data.memes[0].id;
+        this.postMeme();
       });
-      
-      const options = {
-        hostname: 'api.imgflip.com/caption_image',
-        port: 80,
-        path: '/upload',
-        method: 'POST',
-        body: {
-          'template_id':this.templateId,
-          'username':'val',
-          'password':'val',
-          'text0':this.congratz,
-          'text1':this.winner
-        },
-        headers: {
-          'Content-Type': 'application/json',
-          'Content-Length': Buffer.byteLength(postData)
-        }
-      };
-      
-      const req = https.request(options, (res) => {
-        console.log(`STATUS: ${res.statusCode}`);
-        console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
-        res.setEncoding('utf8');
-        res.on('data', (chunk) => {
-          console.log(`BODY: ${chunk}`);
-        });
-        res.on('end', () => {
-          console.log('No more data in response.');
-        });
-      });
-      
-      req.on('error', (e) => {
-        console.error(`problem with request: ${e.message}`);
-      });
-      
-      // Write data to request body
-      req.write(postData);
-      req.end();
 
-      let resJson = JSON.parse(res.body);
-      this.generatedImgUrl = resJson.data.url;      
-    }
+    }).on("error", (err) => {
+      console.log("Error: " + err.message);
+    });
+  }
+
+  postMeme() {
+    console.log(this.congratz);
+
+    // Build the post string from an object
+    var post_data = querystring.stringify({
+      'template_id': this.templateId,
+      'username': 'thorfio',
+      'password': '87654321',
+      'text0': this.congratz,
+      'text1': this.winner
+    });
+
+    const post_options = {
+      hostname: 'api.imgflip.com',
+      port: 443,
+      path: `/caption_image?text0=${this.congratz}&text1=${this.winner}!&password=&username=thorfio&template_id=${this.templateId}`,
+      method: 'POST'
+    };
+
+    // Set up the request
+    var post_req = https.request(post_options, function (res) {
+      res.setEncoding('utf8');
+      res.on('data', function (chunk) {
+        console.log('Response: ' + chunk);
+      });
+    });
+
+    // Write data to request body
+    post_req.write(post_data);
+    post_req.end();
+  }
 }
-
