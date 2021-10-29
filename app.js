@@ -3,13 +3,13 @@ require('dotenv').config();
 const { App } = require("@slack/bolt");
 const GameState = require('./game-state');
 const messages = require('./messages');
-const Meme = require('./meme.js');
+// const Meme = require('./meme.js');
 
 const responseTimeSeconds = 15;
-const timerUpdateIntervalMs = 2000;
+const timerUpdateIntervalMs = 3000;
 
 const gameState = new GameState();
-const meme = new Meme();
+// const meme = new Meme();
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
   signingSecret: process.env.SLACK_SIGNING_SECRET
@@ -21,7 +21,7 @@ app.command('/ssb_trivia', async ({ ack, payload, context }) => {
   try {
       const message = await messages.postLoadingMessage(app, context.botToken, payload.channel_id);
 
-      await gameState.newGame(message.ts, 2).startGame();
+      await gameState.newGame(message.ts, 5).startGame();
       await updateCurrentQuestionDisplay(message.channel, context.botToken, message.ts, responseTimeSeconds);
       beginCountdown(message.channel, context.botToken, message.ts);
     }
@@ -48,7 +48,7 @@ function beginCountdown(channelId, botToken, tsId) {
                 beginCountdown(channelId, botToken, tsId);
             } else {
                 let results = game.getAllResults();
-                let memeResult = meme.getMeme(results[0].participant);
+                //let memeResult = meme.getMeme(results[0].participant);
                 return await messages.updateFinalResults(app, botToken, channelId, tsId, results);
             }
         }

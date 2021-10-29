@@ -104,11 +104,11 @@ module.exports.updateFinalResults = (app, botToken, channelId, tsId, results, me
           }
         }
       )),
-      {
-        "type": "image",
-        "image_url": memeUrl,
-        "alt_text": 'Winner winner chicken dinner'
-      }
+      // {
+      //   "type": "image",
+      //   "image_url": memeUrl,
+      //   "alt_text": 'Winner winner chicken dinner'
+      // }
     ]
   });
 };
