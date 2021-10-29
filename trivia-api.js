@@ -2,7 +2,7 @@ const fetch = require('node-fetch-commonjs');
 const { decode } = require('html-entities');
 
 class TriviaApi {
-  async getTriviaQuestions(count = 10, category = 31) {
+  async getTriviaQuestions(count = 10, category = 9) {
     const result = await fetch(`https://opentdb.com/api.php?amount=${count}&category=${category}`);
     const data = await result.json();
     return data.results.map(q => ({

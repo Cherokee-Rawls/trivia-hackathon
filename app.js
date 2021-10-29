@@ -1,13 +1,15 @@
 // Require the Bolt package (github.com/slackapi/bolt)
+require('dotenv').config();
 const { App } = require("@slack/bolt");
 const GameState = require('./game-state');
 const messages = require('./messages');
-require('dotenv').config();
+const Meme = require('./meme.js');
 
 const responseTimeSeconds = 15;
 const timerUpdateIntervalMs = 2000;
 
 const gameState = new GameState();
+const meme = new Meme();
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
   signingSecret: process.env.SLACK_SIGNING_SECRET
@@ -46,6 +48,7 @@ function beginCountdown(channelId, botToken, tsId) {
                 beginCountdown(channelId, botToken, tsId);
             } else {
                 let results = game.getAllResults();
+                let memeResult = meme.getMeme(results[0].participant);
                 return await messages.updateFinalResults(app, botToken, channelId, tsId, results);
             }
         }

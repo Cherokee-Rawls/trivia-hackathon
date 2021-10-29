@@ -2,10 +2,11 @@
 const triviaApi = require('./trivia-api');
 
 class Game {
-    constructor(numberOfQuestions = 10, timeBetweenQuestionsMs = 15000) {
+    constructor(numberOfQuestions = 10, timeBetweenQuestionsMs = 15000, category = 9) {
         this.numberOfQuestions = numberOfQuestions;
         this.answers = {};
         this.currentQuestionIndex = 0;
+        this.category = category
         this.counter = {
             numberOfTicks: 0,
             counterRef: null,
@@ -14,7 +15,7 @@ class Game {
     }
 
     async startGame() {
-        this.questions = (await triviaApi.getTriviaQuestions(this.numberOfQuestions));
+        this.questions = (await triviaApi.getTriviaQuestions(this.numberOfQuestions, this.category));
         this.answers = new Array(this.questions.length).fill([]);
         return this.getCurrentQuestion();
     }

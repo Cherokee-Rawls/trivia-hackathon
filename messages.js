@@ -82,7 +82,7 @@ module.exports.postCorrectAnswer = (app, botToken, channelId, threadTs, results)
   });
 };
 
-module.exports.updateFinalResults = (app, botToken, channelId, tsId, results) => {
+module.exports.updateFinalResults = (app, botToken, channelId, tsId, results, memeUrl) => {
   return app.client.chat.update({
     token: botToken,
     channel: channelId,
@@ -103,7 +103,12 @@ module.exports.updateFinalResults = (app, botToken, channelId, tsId, results) =>
             "text": `${getPlaceEmojiOrText(i + 1)} @${r.participant} with ${r.score}`
           }
         }
-      ))
+      )),
+      {
+        "type": "image",
+        "image_url": memeUrl,
+        "alt_text": 'Winner winner chicken dinner'
+      }
     ]
   });
 };
