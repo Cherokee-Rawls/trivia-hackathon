@@ -1,5 +1,5 @@
 # trivia-hackathon
-
+![SSB Trivia Logo](./trivia_logo.png)
 Bolt app template
 =================
 
